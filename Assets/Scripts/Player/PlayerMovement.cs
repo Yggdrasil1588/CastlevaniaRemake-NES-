@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     PlayerRaycast playerRaycast;
 
     float isMovingHorizontal;
+    [HideInInspector]
+    public float movement;
     public float moveSpeed = 8;
     public float downForce;
     public float downDistance;
@@ -53,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Player_Movement()
     {
-        float movement = (-isMovingHorizontal) * moveSpeed;
+        movement = (-isMovingHorizontal) * moveSpeed;
         float gravity = 0;
 
         // Sets the gravity if player isn't grounded, stops conflict of there being too much gravity while cimbing 
@@ -65,13 +67,14 @@ public class PlayerMovement : MonoBehaviour
         else if (!playerCollisions.isGrounded && playerRaycast.downDistance > 2.4)
             gravity = -downForce * 5;
 
-        if (playerCanMove)
-            moveVec3 = new Vector3(movement, gravity, 0);
+
+        moveVec3 = new Vector3(movement, gravity, 0);
 
         // Using Rigidbody.velocity rather than transform.translate to get past the conflict I had with rigidbody fighting
         // the transform while going up and down slopes. This also gives move control over downward force when falling
         // and jumping.
-        playerRb.velocity = moveVec3;
+        if (playerCollisions.playerCanMove)
+            playerRb.velocity = moveVec3;
     }
 
     // Scaleflips player based on the facingLeft bool which is determined by the current or last
