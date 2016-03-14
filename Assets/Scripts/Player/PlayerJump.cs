@@ -37,9 +37,10 @@ public class PlayerJump : MonoBehaviour
         {
             if (playerCollisions.isGrounded)
             {
-                playerCollisions.playerCanMove = false;
+                playerCollisions.playerCanMove = false; // Needed to disable rigidbody.velocity in PlayerMovement to be able to 
+                                                        // override it with this rigidbody.velocity.
                 playerRigidbody.velocity = playerJump;
-                playerCollisions.playerCanJump = false;
+                playerCollisions.playerCanJump = false; // Stops player from jumping again until grounded.
             }
         }
     }
