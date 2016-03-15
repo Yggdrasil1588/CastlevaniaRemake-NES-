@@ -13,6 +13,7 @@ public class PlayerCollisions : MonoBehaviour
     public bool isFalling;
     public bool playerCanJump;
     public bool playerCanMove;
+    public bool onStairs;
 
     void Awake()
     {
@@ -29,7 +30,8 @@ public class PlayerCollisions : MonoBehaviour
 
     public void OnCollisionStay(Collision collision)
     {
-        if (collision.collider.tag == "Ground"|| collision.collider.tag == "Ledge")
+        if (collision.collider.tag == "Ground" || collision.collider.tag == "Ledge"
+            || collision.collider.tag == "Stairs")
         {
             isFalling = false;
             isGrounded = true;
@@ -39,10 +41,14 @@ public class PlayerCollisions : MonoBehaviour
 
     public void OnCollisionExit(Collision collision)
     {
-        if (collision.collider.tag == "Ground")
+        if (collision.collider.tag == "Ground"|| collision.collider.tag == "Stairs")
             isGrounded = false;
         if (collision.collider.tag == "Ledge")
+        {
             isFalling = true;
+            isGrounded = false;
+        }
+
     }
 
     public void OnTriggerEnter(Collider other)

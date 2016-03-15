@@ -47,7 +47,7 @@ public class PlayerJump : MonoBehaviour
             if (playerCollisions.isFalling && playerRaycast.downDistance > jumpHeight)
             {
                 print("jumped off ledge");
-                playerRigidbody.velocity = new Vector3(playerMovement.movement, -gravity, 0);
+                playerRigidbody.velocity = new Vector3(playerMovement.movement, -gravity/2, 0);
             }
             else if (playerRaycast.downDistance > jumpHeight && !playerCollisions.isFalling)
             {
