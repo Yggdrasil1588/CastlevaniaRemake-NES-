@@ -7,31 +7,48 @@ using System.Collections;
 
 public class PlayerCollisions : MonoBehaviour
 {
+    PlayerJump playerJump;
 
     public bool isGrounded;
+    public bool isFalling;
     public bool playerCanJump;
     public bool playerCanMove;
+    public bool onStairs;
 
+    void Awake()
+    {
+        playerJump = GetComponent<PlayerJump>();
+    }
 
     public void OnCollisionEnter(Collision collision)
     {
+        isFalling = false;
+        playerJump.isJumping = false;
+        isGrounded = true;
         playerCanMove = true;
     }
 
     public void OnCollisionStay(Collision collision)
     {
-        if (collision.collider.tag == "Ground")
+        if (collision.collider.tag == "Ground" || collision.collider.tag == "Ledge"
+            || collision.collider.tag == "Stairs")
         {
+            isFalling = false;
             isGrounded = true;
             playerCanJump = true;
         }
-
     }
 
     public void OnCollisionExit(Collision collision)
     {
-        if (collision.collider.tag == "Ground")
+        if (collision.collider.tag == "Ground"|| collision.collider.tag == "Stairs")
             isGrounded = false;
+        if (collision.collider.tag == "Ledge")
+        {
+            isFalling = true;
+            isGrounded = false;
+        }
+
     }
 
     public void OnTriggerEnter(Collider other)
