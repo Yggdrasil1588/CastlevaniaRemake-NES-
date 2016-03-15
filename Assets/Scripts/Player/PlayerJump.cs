@@ -8,16 +8,20 @@ public class PlayerJump : MonoBehaviour
 {
     PlayerCollisions playerCollisions;
     PlayerMovement playerMovement;
+    PlayerRaycast playerRaycast;
     Rigidbody playerRigidbody;
 
     [Header("Set Jump Variables")]
     public float jumpHeight;
+    public float force;
+    public float gravity;
 
     public bool isJumping;
 
 
     void Awake()
     {
+        playerRaycast = FindObjectOfType<PlayerRaycast>();
         playerMovement = GetComponent<PlayerMovement>();
         playerCollisions = GetComponent<PlayerCollisions>();
         playerRigidbody = GetComponent<Rigidbody>();
@@ -27,6 +31,36 @@ public class PlayerJump : MonoBehaviour
     void FixedUpdate()
     {
         Jump();
+        SetDownForce();
+        Debug();
+    }
+
+    void Debug()
+    {
+        //print(-gameObject.transform.up);
+    }
+
+    void SetDownForce()
+    {
+        if (isJumping)
+        {
+            if (playerCollisions.isFalling && playerRaycast.downDistance > jumpHeight)
+            {
+                print("jumped off ledge");
+                playerRigidbody.velocity = new Vector3(playerMovement.movement, -gravity, 0);
+            }
+            else if (playerRaycast.downDistance > jumpHeight && !playerCollisions.isFalling)
+            {
+                print("player jump peak");
+                playerRigidbody.velocity = new Vector3(playerMovement.movement, -gravity, 0);
+            }
+
+        }
+        if (!isJumping && playerCollisions.isFalling)
+        {
+            playerRigidbody.velocity = new Vector3(playerMovement.movement, -gravity, 0);
+            print("player is falling");
+        }
     }
 
     void Jump()
@@ -37,10 +71,13 @@ public class PlayerJump : MonoBehaviour
         {
             if (playerCollisions.isGrounded)
             {
+                isJumping = true;
                 playerCollisions.playerCanMove = false; // Needed to disable rigidbody.velocity in PlayerMovement to be able to 
                                                         // override it with this rigidbody.velocity.
                 playerRigidbody.velocity = playerJump;
+                playerRigidbody.AddForce(transform.up * force);
                 playerCollisions.playerCanJump = false; // Stops player from jumping again until grounded.
+
             }
         }
     }

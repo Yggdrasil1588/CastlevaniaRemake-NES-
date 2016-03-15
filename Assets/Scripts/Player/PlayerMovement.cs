@@ -62,11 +62,8 @@ public class PlayerMovement : MonoBehaviour
         // up slopes and too little while climbing down.
         if (playerCollisions.isGrounded)
             gravity = 0;
-        else if (!playerCollisions.isGrounded && playerRaycast.downDistance < 3)
-            gravity = -downForce;
-        else if (!playerCollisions.isGrounded && playerRaycast.downDistance > 2.4)
-            gravity = -downForce * 5;
-
+        else if (!playerCollisions.isGrounded && playerRaycast.downDistance > 0.8)
+            gravity = -playerRaycast.downDistance * downForce;
 
         moveVec3 = new Vector3(movement, gravity, 0);
 
