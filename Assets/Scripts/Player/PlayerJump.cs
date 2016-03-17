@@ -28,44 +28,37 @@ public class PlayerJump : MonoBehaviour
     }
 
 
-    void FixedUpdate()
+    void Update()
     {
         Jump();
-        SetDownForce();
-        Debug();
     }
 
-    void Debug()
-    {
-        //print(-gameObject.transform.up);
-    }
+    //void SetDownForce()
+    //{
+    //    //if (playerRaycast.downDistance > jumpHeight)
+    //    //{
+    //    //    print("jumped off ledge");
+    //    //    playerRigidbody.velocity = new Vector3(playerMovement.movement / 2, -gravity / 2, 0);
+    //    //}
+    //    //if (isJumping)
+    //    //{
+    //    //    if (playerRaycast.downDistance > jumpHeight && !playerCollisions.isFalling)
+    //    //    {
+    //    //        print("player jump peak");
+    //    //        playerRigidbody.velocity = new Vector3(playerMovement.movement, -gravity, 0);
+    //    //    }
 
-    void SetDownForce()
-    {
-        if (isJumping)
-        {
-            if (playerCollisions.isFalling && playerRaycast.downDistance > jumpHeight)
-            {
-                print("jumped off ledge");
-                playerRigidbody.velocity = new Vector3(playerMovement.movement, -gravity/2, 0);
-            }
-            else if (playerRaycast.downDistance > jumpHeight && !playerCollisions.isFalling)
-            {
-                print("player jump peak");
-                playerRigidbody.velocity = new Vector3(playerMovement.movement, -gravity, 0);
-            }
-
-        }
-        if (!isJumping && playerCollisions.isFalling)
-        {
-            playerRigidbody.velocity = new Vector3(playerMovement.movement, -gravity, 0);
-            print("player is falling");
-        }
-    }
+    //    //}
+    //    //if (!isJumping && playerCollisions.isFalling)
+    //    //{
+    //    //    playerRigidbody.velocity = new Vector3(playerMovement.CheckMovement() / 2, -gravity, 0);
+    //    //    print("player is falling");
+    //    //}
+    //}
 
     void Jump()
     {
-        Vector3 playerJump = new Vector3(playerMovement.movement, jumpHeight, 0);
+        Vector3 playerJump = new Vector3(playerMovement.CheckMovement() / 2, jumpHeight, 0);
 
         if (Input.GetButtonDown("Jump") && playerCollisions.playerCanJump == true)
         {

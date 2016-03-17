@@ -37,6 +37,8 @@ public class EnemyMove : MonoBehaviour
         EnemyMovement();
     }
 
+
+
     void EnemyMovement()
     {
         // Set for downslopes or stairs, adds a variable to Y vector to push it down when travelling down slopes or stairs. 
@@ -113,9 +115,9 @@ public class EnemyMove : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    void OnCollisionEnter(Collision collision)
     {
-        if (other.tag == enemyTag)
+        if (collision.gameObject.tag == "Enemy")
         {
             moveRight = !moveRight;
         }

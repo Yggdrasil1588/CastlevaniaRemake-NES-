@@ -22,9 +22,7 @@ public class PlayerCollisions : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
-        isFalling = false;
         playerJump.isJumping = false;
-        isGrounded = true;
         playerCanMove = true;
     }
 
@@ -41,8 +39,15 @@ public class PlayerCollisions : MonoBehaviour
 
     public void OnCollisionExit(Collision collision)
     {
-        if (collision.collider.tag == "Ground"|| collision.collider.tag == "Stairs")
+        if (collision.collider.tag == "Ground")
             isGrounded = false;
+
+        if (collision.collider.tag == "Stairs")
+        {
+            onStairs = false;
+            isGrounded = false;
+        }
+
         if (collision.collider.tag == "Ledge")
         {
             isFalling = true;
