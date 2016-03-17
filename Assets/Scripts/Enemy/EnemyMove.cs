@@ -37,6 +37,8 @@ public class EnemyMove : MonoBehaviour
         EnemyMovement();
     }
 
+
+
     void EnemyMovement()
     {
         // Set for downslopes or stairs, adds a variable to Y vector to push it down when travelling down slopes or stairs. 
@@ -57,12 +59,12 @@ public class EnemyMove : MonoBehaviour
         if (moveRight)
         {
             transform.rotation = Quaternion.identity;
-            enemyRigidbody.velocity = new Vector3(moveSpeed, -grav, 0);
+            enemyRigidbody.velocity = new Vector3(moveSpeed, 0, 0);
         }
         else if (!moveRight)
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);
-            enemyRigidbody.velocity = new Vector3(-moveSpeed, -grav, 0);
+            enemyRigidbody.velocity = new Vector3(-moveSpeed, 0, 0);
         }
     }
 
@@ -113,9 +115,9 @@ public class EnemyMove : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    void OnCollisionEnter(Collision collision)
     {
-        if (other.tag == enemyTag)
+        if (collision.gameObject.tag == "Enemy")
         {
             moveRight = !moveRight;
         }

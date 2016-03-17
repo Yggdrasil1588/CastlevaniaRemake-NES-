@@ -5,14 +5,19 @@
 public class PlayerMovement : MonoBehaviour
 {
     #region Variables
+    LaneChange laneChange = new LaneChange();
     Rigidbody playerRb;
     PlayerCollisions playerCollisions;
     PlayerRaycast playerRaycast;
 
+    [Header("Lanes")]
+    public Transform lane1;
+    public Transform lane2;
+    Transform transTemp = null;
+
     float gravity = 0;
     float isMovingHorizontal;
-    [HideInInspector]
-    public float movement;
+    float movement;
     public float moveSpeed = 8;
     public float downForce;
     public float downDistance;
@@ -35,15 +40,31 @@ public class PlayerMovement : MonoBehaviour
         playerCanMove = true;
     }
 
+    void Update()
+    {
+        if (Input.GetAxis("Vertical") < 0)
+        {
+            transTemp = lane1;
+            laneChange.ChangeLanes(gameObject, transTemp);
+        }
+
+        if (Input.GetAxis("Vertical") > 0)
+        {
+            transTemp = lane2;
+            laneChange.ChangeLanes(gameObject, transTemp);
+        }
+
+    }
+
     void FixedUpdate()
     {
-        SetVariables();
+        SetFlipState();
         Player_Movement();
         PlayerFlip();
     }
 
     // Method to set booleans.
-    void SetVariables()
+    void SetFlipState()
     {
         isMovingHorizontal = Input.GetAxis("Horizontal");
 
@@ -56,12 +77,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Player_Movement()
     {
-
-        
-
-        // Sets the gravity if player isn't grounded, stops conflict of there being too much gravity while cimbing 
+        // Sets the gravity if player isn't grounded, reduces the conflict of there being too much gravity while cimbing 
         // up slopes and too little while climbing down.
-        if (playerCollisions.isGrounded)
+        if (playerCollisions.isGrounded && playerCollisions.isGrounded)
         {
             gravity = 0;
             movement = (-isMovingHorizontal) * moveSpeed;
@@ -69,10 +87,11 @@ public class PlayerMovement : MonoBehaviour
         else if (!playerCollisions.isGrounded && playerRaycast.downDistance > 0.8f
                     && playerRaycast.playerRaycastOutHitDown.collider.tag == "Stairs")
         {
-           gravity = 2.3f;
-            movement = 3;
+            gravity = 2.3f;
+            movement = (-isMovingHorizontal) * 3;
         }
- 
+        else
+            gravity = 4;
 
         moveVec3 = new Vector3(movement, -gravity, 0);
 
@@ -81,6 +100,11 @@ public class PlayerMovement : MonoBehaviour
         // and jumping.
         if (playerCollisions.playerCanMove)
             playerRb.velocity = moveVec3;
+    }
+
+    public float CheckMovement()
+    {
+        return movement;
     }
 
     // Scaleflips player based on the facingLeft bool which is determined by the current or last
@@ -94,12 +118,12 @@ public class PlayerMovement : MonoBehaviour
         {
             if (facingLeft)
             {
-                gameObject.transform.localScale = new Vector3(normalScale, normalScale, normalScale);
+                gameObject.transform.rotation = Quaternion.Euler(0, 90, 0);
                 playerRaycast.gameObject.transform.rotation = Quaternion.Euler(0, 90, 0); // Flips ray holer
             }
             else if (!facingLeft)
             {
-                gameObject.transform.localScale = new Vector3(normalScale, normalScale, -normalScale);
+                gameObject.transform.rotation = Quaternion.Euler(0, 270, 0);
                 playerRaycast.gameObject.transform.rotation = Quaternion.Euler(0, 270, 0); ; // Flips ray holer
             }
         }
