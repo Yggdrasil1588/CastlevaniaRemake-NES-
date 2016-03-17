@@ -149,7 +149,8 @@ public class TimerClass
     }
 
     public int GetTime()
-    {  // remember to call UpdateTimer() before trying to use this  
+    {
+        // remember to call UpdateTimer() before trying to use this  
        // function, otherwise the time value will not be up to date     
         return (int)(currentTime);
     }

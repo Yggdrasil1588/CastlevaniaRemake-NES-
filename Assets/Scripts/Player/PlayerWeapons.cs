@@ -13,16 +13,17 @@ public class PlayerWeapons : MonoBehaviour
     int throwForce;
 
     [Header("WeaponSelected")]
-
     bool dagger;
     bool stopWatch;
     bool holyCross;
 
+    Vector3 playerVelocity;
 
     void Update()
     {
+        playerVelocity = gameObject.GetComponent<Rigidbody>().velocity; //Grabs the current velocity of the player
         MainWeapon();
-        SecondaryWeaponDagger();
+        SecondaryWeapons();
     }
 
     void MainWeapon()
@@ -31,6 +32,13 @@ public class PlayerWeapons : MonoBehaviour
         {
             print("main weapon active");
         }
+    }
+
+    void SecondaryWeapons()
+    {
+        SecondaryWeaponDagger();
+        SecondaryWeaponHolyCross();
+        SecondaryWeaponStopWatch();
     }
 
     public void CheckSelectedWeapon(string currentWep)
@@ -44,7 +52,6 @@ public class PlayerWeapons : MonoBehaviour
     {
         if (dagger)
         {
-            Vector3 playerVelocity = gameObject.GetComponent<Rigidbody>().velocity; //Grabs the current velocity of the player
             if (Input.GetButtonDown("Fire2") && secondaryAmmo.CheckAmmo() > 0)
             {
                 GameObject temp = Instantiate(Resources.Load("Dagger", typeof(GameObject)),
@@ -66,6 +73,16 @@ public class PlayerWeapons : MonoBehaviour
         {
             if (Input.GetButtonDown("Fire2") && secondaryAmmo.CheckAmmo() > 0)
             {
+                GameObject temp = Instantiate(Resources.Load("StopWatch", typeof(GameObject)),
+                                instantiatePoint.position,
+                                    instantiatePoint.rotation) as GameObject;
+                Rigidbody rb = temp.AddComponent<Rigidbody>();
+                Physics.IgnoreCollision(temp.GetComponent<Collider>(), gameObject.GetComponent<Collider>());
+                rb.useGravity = false;
+                rb.velocity = playerVelocity; // Sets the velocity of the projectile to the current player velocity
+                rb.AddForce(transform.forward * throwForce); // Adds forward force to the projectile 
+
+                secondaryAmmo.RemoveAmmo(1);
                 print("Stop-Watch Fire");
             }
         }
@@ -76,6 +93,16 @@ public class PlayerWeapons : MonoBehaviour
         {
             if (Input.GetButtonDown("Fire2") && secondaryAmmo.CheckAmmo() > 0)
             {
+                GameObject temp = Instantiate(Resources.Load("HolyCross", typeof(GameObject)),
+                instantiatePoint.position,
+                    instantiatePoint.rotation) as GameObject;
+                Rigidbody rb = temp.AddComponent<Rigidbody>();
+                Physics.IgnoreCollision(temp.GetComponent<Collider>(), gameObject.GetComponent<Collider>());
+                rb.useGravity = false;
+                rb.velocity = playerVelocity; // Sets the velocity of the projectile to the current player velocity
+                rb.AddForce(transform.forward * throwForce); // Adds forward force to the projectile 
+
+                secondaryAmmo.RemoveAmmo(1);
                 print("Holy Cross Fire");
             }
         }

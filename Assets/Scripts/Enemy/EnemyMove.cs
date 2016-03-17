@@ -59,12 +59,12 @@ public class EnemyMove : MonoBehaviour
         if (moveRight)
         {
             transform.rotation = Quaternion.identity;
-            enemyRigidbody.velocity = new Vector3(moveSpeed, -grav, 0);
+            enemyRigidbody.velocity = new Vector3(moveSpeed, 0, 0);
         }
         else if (!moveRight)
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);
-            enemyRigidbody.velocity = new Vector3(-moveSpeed, -grav, 0);
+            enemyRigidbody.velocity = new Vector3(-moveSpeed, 0, 0);
         }
     }
 

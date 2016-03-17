@@ -11,13 +11,14 @@ public class EnemyHealthManager : MonoBehaviour
     EnemyMove enemyMove;
     Collider enemyCollider;
     SkinnedMeshRenderer[] enemeyRenderer;
-    public Transform respawnPos;
+    Vector3 respawnPos;
     [SerializeField]
     int enemyMaxHealth;
     int enemyHealth;
 
     void Start()
     {
+        respawnPos = gameObject.transform.position;
         scoreManager = FindObjectOfType<ScoreManager>();
         enemyMove = gameObject.GetComponent<EnemyMove>();
         enemyHealth = enemyMaxHealth;
@@ -50,13 +51,13 @@ public class EnemyHealthManager : MonoBehaviour
         }
         enemyCollider.enabled = !enemyCollider.enabled;
         yield return new WaitForSeconds(4f);
-        transform.position = respawnPos.position;
-        enemyMove.enabled = !enemyMove.enabled;
+        enemyCollider.enabled = true;
         for (int x = 0; x < enemeyRenderer.Length; x++)
         {
             enemeyRenderer[x].enabled = !enemeyRenderer[x].enabled;
         }
-        enemyCollider.enabled = true;
+        transform.position = respawnPos;
+        enemyMove.enabled = !enemyMove.enabled;
         yield return null;
     }
 }
