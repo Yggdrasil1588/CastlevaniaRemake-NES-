@@ -10,12 +10,9 @@ public class WeaponSelection : MonoBehaviour
     PlayerWeapons playerWeapons;
     [SerializeField]
     List<string> weaponsInInventoryList;
-    [SerializeField]
     string[] weaponsInInventory;
-    [SerializeField]
     string currentWep;
 
-    [SerializeField]
     int arrayPos = 0;
 
     void Awake()
@@ -62,7 +59,7 @@ public class WeaponSelection : MonoBehaviour
     void SelectionMenu()
     {
         if (Input.GetKeyDown(KeyCode.RightBracket))
-            if (arrayPos >= weaponsInInventory.Length - 1)
+            if (arrayPos >= weaponsInInventoryList.Count - 1)
             {
                 arrayPos = 0;
                 currentWep = weaponsInInventory[arrayPos];
@@ -74,12 +71,12 @@ public class WeaponSelection : MonoBehaviour
             }
 
         if (Input.GetKeyDown(KeyCode.LeftBracket))
-            if (arrayPos <= 0)
+            if (arrayPos <= 0 && weaponsInInventoryList.Count > 0)
             {
-                arrayPos = weaponsInInventory.Length - 1;
+                arrayPos = weaponsInInventoryList.Count - 1;
                 currentWep = weaponsInInventory[arrayPos];
             }
-            else
+            else if (weaponsInInventoryList.Count > 0)
             {
                 arrayPos--;
                 currentWep = weaponsInInventory[arrayPos];

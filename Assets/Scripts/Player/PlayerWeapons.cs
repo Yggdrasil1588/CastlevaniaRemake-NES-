@@ -7,6 +7,7 @@ using System.Collections;
 public class PlayerWeapons : MonoBehaviour
 {
     [HideInInspector]
+    ScoreManager scoreManager;
     public AmmoManager secondaryAmmo = new AmmoManager();
     public Transform instantiatePoint;
     [SerializeField]
@@ -18,6 +19,11 @@ public class PlayerWeapons : MonoBehaviour
     bool holyCross;
 
     Vector3 playerVelocity;
+
+    void Awake()
+    {
+        scoreManager = FindObjectOfType<ScoreManager>();
+    }
 
     void Update()
     {
@@ -71,18 +77,10 @@ public class PlayerWeapons : MonoBehaviour
     {
         if (stopWatch)
         {
-            if (Input.GetButtonDown("Fire2") && secondaryAmmo.CheckAmmo() > 0)
+            if (Input.GetButtonDown("Fire2") && secondaryAmmo.CheckAmmo() >= 3)
             {
-                GameObject temp = Instantiate(Resources.Load("StopWatch", typeof(GameObject)),
-                                instantiatePoint.position,
-                                    instantiatePoint.rotation) as GameObject;
-                Rigidbody rb = temp.AddComponent<Rigidbody>();
-                Physics.IgnoreCollision(temp.GetComponent<Collider>(), gameObject.GetComponent<Collider>());
-                rb.useGravity = false;
-                rb.velocity = playerVelocity; // Sets the velocity of the projectile to the current player velocity
-                rb.AddForce(transform.forward * throwForce); // Adds forward force to the projectile 
-
-                secondaryAmmo.RemoveAmmo(1);
+                StartCoroutine(StopWatchCorout());
+                secondaryAmmo.RemoveAmmo(3);
                 print("Stop-Watch Fire");
             }
         }
@@ -91,20 +89,37 @@ public class PlayerWeapons : MonoBehaviour
     {
         if (holyCross)
         {
-            if (Input.GetButtonDown("Fire2") && secondaryAmmo.CheckAmmo() > 0)
+            if (Input.GetButtonDown("Fire2") && secondaryAmmo.CheckAmmo() >= 5)
             {
-                GameObject temp = Instantiate(Resources.Load("HolyCross", typeof(GameObject)),
-                instantiatePoint.position,
-                    instantiatePoint.rotation) as GameObject;
-                Rigidbody rb = temp.AddComponent<Rigidbody>();
-                Physics.IgnoreCollision(temp.GetComponent<Collider>(), gameObject.GetComponent<Collider>());
-                rb.useGravity = false;
-                rb.velocity = playerVelocity; // Sets the velocity of the projectile to the current player velocity
-                rb.AddForce(transform.forward * throwForce); // Adds forward force to the projectile 
-
-                secondaryAmmo.RemoveAmmo(1);
+                EnemyHealthManager[] enemy = FindObjectsOfType<EnemyHealthManager>();
+                int enemiesKilled = 0;
+                for (int i = 0; i < enemy.Length; i++)
+                {
+                    if (enemy[i].RespawnCheck() == false)
+                    {
+                        StartCoroutine(enemy[i].Respawn());
+                        enemiesKilled++;
+                    }
+                }
+                scoreManager.AddScore(100 * enemiesKilled);
+                secondaryAmmo.RemoveAmmo(5);
                 print("Holy Cross Fire");
             }
         }
+    }
+
+    IEnumerator StopWatchCorout()
+    {
+        EnemyMove[] enemies = FindObjectsOfType<EnemyMove>();
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            enemies[i].FreezeEnemy(true);
+        }
+        yield return new WaitForSeconds(5);
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            enemies[i].FreezeEnemy(false);
+        }
+        yield return null;
     }
 }
