@@ -82,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
     {
         get
         {
-            return facingLeftCheck;
+            return facingLeftSet;
         }
     } // read only bool to check if facing left externally
 
@@ -224,14 +224,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (playerCanMove)
         {
-            if (facingLeftSet)
+            if (facingLeftCheck)
             {
-                gameObject.transform.rotation = Quaternion.Euler(0, 90, 0);
+                gameObject.transform.rotation = Quaternion.Euler(0, 90, 0); // flips character
                 playerRaycast.gameObject.transform.rotation = Quaternion.Euler(0, 90, 0); // Flips ray holder
             }
-            else if (!facingLeftSet)
+            else if (!facingLeftCheck)
             {
-                gameObject.transform.rotation = Quaternion.Euler(0, 270, 0);
+                gameObject.transform.rotation = Quaternion.Euler(0, 270, 0); // flips character
                 playerRaycast.gameObject.transform.rotation = Quaternion.Euler(0, 270, 0); ; // Flips ray holder
             }
         }
