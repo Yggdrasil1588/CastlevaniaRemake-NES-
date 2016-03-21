@@ -62,7 +62,7 @@ public class PlayerCamera : MonoBehaviour
         cameraRotation.w = 0.0f;
 
         transform.rotation = cameraRotation;
-        transform.position = new Vector3(smoothDampX, cameraPosOffset.y, cameraPosOffset.z);
+        transform.position = new Vector3(smoothDampX, transform.position.y, transform.position.z);
     }
 
     void IsFlipped()

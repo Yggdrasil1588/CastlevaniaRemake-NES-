@@ -22,6 +22,12 @@ public class PlayerCollisions : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
+        if (collision.collider.tag == "Stairs")
+        {
+            print("Stairs");
+            onStairs = true;
+            isGrounded = false;
+        }
         playerJump.isJumping = false;
         playerCanMove = true;
     }

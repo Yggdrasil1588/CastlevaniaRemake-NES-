@@ -4,9 +4,10 @@ using UnityEngine.UI;
 
 //Author: J.Anderson
 
-public class TimerManager : MonoBehaviour 
+public class TimerManager : MonoBehaviour
 {
-    TimerClass timerClass = new TimerClass();
+    [HideInInspector]
+    public TimerClass timerClass = new TimerClass();
 
     public Text timerText;
 

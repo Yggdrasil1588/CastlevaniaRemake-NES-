@@ -12,6 +12,7 @@ public class WeaponSelection : MonoBehaviour
     List<string> weaponsInInventoryList;
     string[] weaponsInInventory;
     string currentWep;
+    int availableAmmoForWep;
 
     int arrayPos = 0;
 
@@ -28,6 +29,7 @@ public class WeaponSelection : MonoBehaviour
 
     void Update()
     {
+        availableAmmoForWep = AmmoCostCheck(currentWep, playerWeapons.secondaryAmmo.CheckAmmo());
         OnDeath();
         SelectionMenu();
     }
@@ -93,6 +95,23 @@ public class WeaponSelection : MonoBehaviour
     public void SetActivePickup(string pickupTag)
     {
         currentWep = pickupTag;
+    }
+
+    int AmmoCostCheck(string wep, int availableAmmo)
+    {
+        int available = 0;
+        if (wep == "Dagger")
+            available = availableAmmo / 1;
+        if (wep == "HolyCross")
+            available = availableAmmo / 5;
+        if (wep == "StopWatch")
+            available = availableAmmo / 3;
+        return available;
+    }
+
+    public int availableAmmoForCurrentWep()
+    {
+        return availableAmmoForWep;
     }
 
     void OnDeath()

@@ -58,7 +58,7 @@ public class PlayerJump : MonoBehaviour
 
     void Jump()
     {
-        Vector3 playerJump = new Vector3(playerMovement.CheckMovement() / 2, jumpHeight, 0);
+        Vector3 playerJump = new Vector3(playerMovement.CheckMovement(), jumpHeight, 0);
 
         if (Input.GetButtonDown("Jump") && playerCollisions.playerCanJump == true)
         {
@@ -67,7 +67,7 @@ public class PlayerJump : MonoBehaviour
                 isJumping = true;
                 playerCollisions.playerCanMove = false; // Needed to disable rigidbody.velocity in PlayerMovement to be able to 
                                                         // override it with this rigidbody.velocity.
-                playerRigidbody.velocity = playerJump;
+               // playerRigidbody.velocity = playerJump;
                 playerRigidbody.AddForce(transform.up * force);
                 playerCollisions.playerCanJump = false; // Stops player from jumping again until grounded.
 
