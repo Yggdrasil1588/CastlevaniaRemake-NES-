@@ -20,6 +20,11 @@ public class PlayerRaycast : MonoBehaviour
     public string downRayTag;
     public string forwardRayTag;
 
+    void Awake()
+    {
+        Update(); // In awake to get rid of null reference error on startup. 
+    }
+
     void Update()
     {
         PlayerRaycastOut();
@@ -55,4 +60,8 @@ public class PlayerRaycast : MonoBehaviour
         }
     }
 
+    public string GetDownRayTag()
+    {
+        return playerRaycastOutHitDown.transform.gameObject.tag;
+    }
 }

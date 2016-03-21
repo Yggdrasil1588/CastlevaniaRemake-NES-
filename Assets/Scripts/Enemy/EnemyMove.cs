@@ -18,6 +18,7 @@ public class EnemyMove : MonoBehaviour
 
     public bool atEdge, hittingWall, isGrounded, climbingUpStairs;
     bool moveRight;
+    bool frozen;
 
     public float moveSpeed;
     public float rayChkDistFwd;
@@ -41,31 +42,45 @@ public class EnemyMove : MonoBehaviour
 
     void EnemyMovement()
     {
-        // Set for downslopes or stairs, adds a variable to Y vector to push it down when travelling down slopes or stairs. 
-        // If the grav variable is exactly the same as the ray check down distance variable the travel is smooth.  
-        if (!isGrounded && downRayDist > 0.6f) // 0.7f seems to be the sweet spot to get it hovering just above collision 
-            grav = rayChkDistDwn;
-        else if (isGrounded)
-            grav = 0;
+        if (!frozen)
+        {
+            // Set for downslopes or stairs, adds a variable to Y vector to push it down when travelling down slopes or stairs. 
+            // If the grav variable is exactly the same as the ray check down distance variable the travel is smooth.  
+            if (!isGrounded && downRayDist > 0.6f) // 0.7f seems to be the sweet spot to get it hovering just above collision 
+                grav = rayChkDistDwn;
+            else if (isGrounded)
+                grav = 0;
 
-        // speed increased when climbing stairs to appear slightly slower then normal but not as slow as it was when fighting 
-        // rigidbody physics.   
-        if (climbingUpStairs && isGrounded)
-            moveSpeed = 5;
+            // speed increased when climbing stairs to appear slightly slower then normal but not as slow as it was when fighting 
+            // rigidbody physics.   
+            if (climbingUpStairs && isGrounded)
+                moveSpeed = 5;
+            else
+                moveSpeed = 3;
+        }
+
+            // direction based on raycheck
+            if (moveRight)
+            {
+                transform.rotation = Quaternion.identity;
+                enemyRigidbody.velocity = new Vector3(moveSpeed, 0, 0);
+            }
+            else if (!moveRight)
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+                enemyRigidbody.velocity = new Vector3(-moveSpeed, 0, 0);
+            }
+        
+    }
+
+    public void FreezeEnemy(bool isFrozen)
+    {
+        frozen = isFrozen;
+
+        if (isFrozen)
+            moveSpeed = 0;
         else
-            moveSpeed = 3;
-
-        // direction based on raycheck
-        if (moveRight)
-        {
-            transform.rotation = Quaternion.identity;
-            enemyRigidbody.velocity = new Vector3(moveSpeed, 0, 0);
-        }
-        else if (!moveRight)
-        {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-            enemyRigidbody.velocity = new Vector3(-moveSpeed, 0, 0);
-        }
+            moveSpeed = 6;
     }
 
     void EdgeCheck()
@@ -121,6 +136,6 @@ public class EnemyMove : MonoBehaviour
         {
             moveRight = !moveRight;
         }
-    } 
+    }
     #endregion
 }

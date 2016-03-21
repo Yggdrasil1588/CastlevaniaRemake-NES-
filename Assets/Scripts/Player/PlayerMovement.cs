@@ -4,63 +4,139 @@
 
 public class PlayerMovement : MonoBehaviour
 {
-    #region Variables
-    LaneChange laneChange = new LaneChange();
-    Rigidbody playerRb;
-    PlayerCollisions playerCollisions;
-    PlayerRaycast playerRaycast;
+    // Variables displayed in the inspector
+    [System.Serializable]
+    public class MoveSettings
+    {
+        [SerializeField]
+        float moveSpeed = 5;
+        [SerializeField]
+        float forwardForce = 20;
+        [SerializeField]
+        float smoothTime = 0.75f;
 
-    [Header("Lanes")]
-    public Transform lane1;
-    public Transform lane2;
-    Transform transTemp = null;
+        // references private variables as public methods so that they can be read or written externally
+        // depending on what's needed.  
+        public float ZeroSmoothTime()
+        {
+            return smoothTime;
+        }
+        public float ForwardForce()
+        {
+            return forwardForce;
+        }
+        public void SetMoveSpeed(float speed)
+        {
+            moveSpeed = speed;
+        }
+        public float GetMoveSpeed()
+        {
+            return moveSpeed;
+        }
+    } // all variables for movement
+    [System.Serializable]
+    public class Lanes
+    {
+        [SerializeField]
+        Transform lane1;
+        [SerializeField]
+        Transform lane2;
 
-    float gravity = 0;
+        public Transform Lane1()
+        {
+            return lane1;
+        }
+        public Transform Lane2()
+        {
+            return lane2;
+        }
+
+    } // transforms for lane change
+
+    public MoveSettings moveSettings = new MoveSettings(); // sets class reference
+    public Lanes lanes = new Lanes(); // sets class reference
+
+
+    // Internal variables
+    Transform transTemp = null; // temp transform to hold lane change transform information
+    float inputDelay = 0.1f; // deadzone for character movement input
     float isMovingHorizontal;
-    float movement;
-    public float moveSpeed = 8;
-    public float downForce;
-    public float downDistance;
+    float velocityRef; // reference variable for Mathf.SmoothDamp
+    bool facingLeftSet; // sets if the character is facing left
+    bool playerCanMove // grabs bool from playerCollisions
+    {
+        get
+        {
+            return playerCollisions.playerCanMove;
+        }
+    }
 
-    public bool facingLeft;
-    public bool playerCanMove; // To stop player input when needed
+    // Componenets
+    LaneChange laneChange; // script containing the lane changing method
+    Rigidbody playerRb;
+    PlayerCollisions playerCollisions; // script containing all player collisions
+    public PlayerRaycast playerRaycast; // script containing all player raycast data (reference from inspector)
 
-    Vector3 moveVec3;
-    #endregion
+    // Read only variables
+    public bool facingLeftCheck
+    {
+        get
+        {
+            return facingLeftSet;
+        }
+    } // read only bool to check if facing left externally
 
     void Awake()
     {
+        laneChange = GetComponent<LaneChange>();
         playerCollisions = GetComponent<PlayerCollisions>();
-        playerRaycast = FindObjectOfType<PlayerRaycast>();
     }
 
     void Start()
     {
-        playerRb = gameObject.GetComponent<Rigidbody>();
-        playerCanMove = true;
+        if (GetComponent<Rigidbody>())
+            playerRb = gameObject.GetComponent<Rigidbody>();
+        else
+            Debug.LogError("Character has no rigidbody");
     }
 
     void Update()
     {
+        ChangeLanes();
+        GravityToggle();
+        SetFlipState();
+        PlayerFlip();
+    }
+
+    void ChangeLanes()
+    {
+        // snaps the player z transform into one of two lanes depending on input
         if (Input.GetAxis("Vertical") < 0)
         {
-            transTemp = lane1;
-            laneChange.ChangeLanes(gameObject, transTemp);
+            if (lanes.Lane1() != null) // checks if transform is available
+            {
+                transTemp = lanes.Lane1();
+                laneChange.ChangeLanes(gameObject, transTemp);
+            }
+            else
+                Debug.LogError("Lane1 transform not referenced in inspector"); // throws an error if not available
         }
 
         if (Input.GetAxis("Vertical") > 0)
         {
-            transTemp = lane2;
-            laneChange.ChangeLanes(gameObject, transTemp);
+            if (lanes.Lane2() != null)
+            {
+                transTemp = lanes.Lane2();
+                laneChange.ChangeLanes(gameObject, transTemp);
+            }
+            else
+                Debug.LogError("Lane2 transform not referenced in inspector");
         }
-
     }
 
     void FixedUpdate()
     {
-        SetFlipState();
         Player_Movement();
-        PlayerFlip();
     }
 
     // Method to set booleans.
@@ -70,64 +146,94 @@ public class PlayerMovement : MonoBehaviour
 
         // Check to see direction player is facing
         if (isMovingHorizontal <= -.000000001)
-            facingLeft = true;
+            facingLeftSet = true;
         else if (isMovingHorizontal >= .000000001)
-            facingLeft = false;
+            facingLeftSet = false;
     }
 
     void Player_Movement()
     {
-        // Sets the gravity if player isn't grounded, reduces the conflict of there being too much gravity while cimbing 
-        // up slopes and too little while climbing down.
-        if (playerCollisions.isGrounded && playerCollisions.isGrounded)
+        if (playerCanMove)
         {
-            gravity = 0;
-            movement = (-isMovingHorizontal) * moveSpeed;
+            float currentXVelocity = playerRb.velocity.x; // temp float for holding the current x axis velocity of the character
+
+           
+            // deadzone is set up for rigidbody movement so that a zero point can be set when there is no player input
+            // this seemed to fix the character not being able to stop while climbing up stairs
+            if (Mathf.Abs(isMovingHorizontal) > inputDelay) // if the input variable is greater then the deadzone then player can move
+            {
+                SpeedCap(); // see method for info
+
+                // both of these if statements output a +forward movement, this is needed because the when the character rotates
+                // the transform is facing forward but the input is -forward 
+                if (isMovingHorizontal > 0) // if input is + then it stays +
+                    playerRb.AddForce(transform.forward * (isMovingHorizontal * moveSettings.ForwardForce()));
+                if (isMovingHorizontal < 0)// if input is - then it's set as +
+                    playerRb.AddForce(transform.forward * (-isMovingHorizontal * moveSettings.ForwardForce()));
+            }
+            // when no input is detected Mathf.SmoothDamp grabs the last value from currentXVelocity and interpolates between
+            // that value and zero by the smoothTime value set in ZeroSmoothTime()
+            else
+            {
+                float smoothToZero = Mathf.SmoothDamp(currentXVelocity, 0.0f, ref velocityRef, moveSettings.ZeroSmoothTime());
+                playerRb.velocity = new Vector3(smoothToZero, playerRb.velocity.y, playerRb.velocity.z);
+            }
+            Debug.Log(playerRb.velocity);
         }
-        else if (!playerCollisions.isGrounded && playerRaycast.downDistance > 0.8f
-                    && playerRaycast.playerRaycastOutHitDown.collider.tag == "Stairs")
+    }
+
+    void SpeedCap()
+    {
+        // Stops the AddForce method from increasing the characters velocity over the set move speed
+        // if current velocity is greater than move speed then current velocity equals move speed
+        if (playerRb.velocity.x > moveSettings.GetMoveSpeed())
         {
-            gravity = 2.3f;
-            movement = (-isMovingHorizontal) * 3;
+            Vector3 speedCap = new Vector3(moveSettings.GetMoveSpeed(), playerRb.velocity.y, playerRb.velocity.z);
+            playerRb.velocity = speedCap;
+        }
+        if (playerRb.velocity.x < -moveSettings.GetMoveSpeed())
+        {
+            Vector3 speedCap = new Vector3(-moveSettings.GetMoveSpeed(), playerRb.velocity.y, playerRb.velocity.z);
+            playerRb.velocity = speedCap;
+        }
+    }
+
+    void GravityToggle()
+    {
+        // turns off gravity while climbing starts so the player doesn't slide back down
+        if (playerCollisions.onStairs)
+        {
+            playerRb.useGravity = false;
+            playerCollisions.playerCanJump = false;
         }
         else
-            gravity = 4;
-
-        moveVec3 = new Vector3(movement, -gravity, 0);
-
-        // Using Rigidbody.velocity rather than transform.translate to get past the conflict I had with rigidbody fighting
-        // the transform while going up and down slopes. This also gives move control over downward force when falling
-        // and jumping.
-        if (playerCollisions.playerCanMove)
-            playerRb.velocity = moveVec3;
+        {
+            playerRb.useGravity = true;
+            playerCollisions.playerCanJump = true;
+        }
     }
 
     public float CheckMovement()
     {
-        return movement;
-    }
+        return playerRb.velocity.x;
+    }// reference to current player velocity for jumping
 
-    // Scaleflips player based on the facingLeft bool which is determined by the current or last
+    // rotates player based on the facingLeft bool which is determined by the current or last
     // directional keypress.
     void PlayerFlip()
     {
-        float normalScale = gameObject.transform.localScale.y; // Always references off of Y scale to keep its 1:1:1 ratio 
-                                                               // could also use the X scale because it's not affected 
-                                                               // by the Z scale flip.
         if (playerCanMove)
         {
-            if (facingLeft)
+            if (facingLeftCheck)
             {
-                gameObject.transform.rotation = Quaternion.Euler(0, 90, 0);
-                playerRaycast.gameObject.transform.rotation = Quaternion.Euler(0, 90, 0); // Flips ray holer
+                gameObject.transform.rotation = Quaternion.Euler(0, 90, 0); // flips character
+                playerRaycast.gameObject.transform.rotation = Quaternion.Euler(0, 90, 0); // Flips ray holder
             }
-            else if (!facingLeft)
+            else if (!facingLeftCheck)
             {
-                gameObject.transform.rotation = Quaternion.Euler(0, 270, 0);
-                playerRaycast.gameObject.transform.rotation = Quaternion.Euler(0, 270, 0); ; // Flips ray holer
+                gameObject.transform.rotation = Quaternion.Euler(0, 270, 0); // flips character
+                playerRaycast.gameObject.transform.rotation = Quaternion.Euler(0, 270, 0); ; // Flips ray holder
             }
         }
-
     }
-
 }

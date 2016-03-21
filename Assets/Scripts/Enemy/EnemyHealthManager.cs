@@ -15,6 +15,7 @@ public class EnemyHealthManager : MonoBehaviour
     [SerializeField]
     int enemyMaxHealth;
     int enemyHealth;
+    bool isRespawning;
 
     void Start()
     {
@@ -42,8 +43,14 @@ public class EnemyHealthManager : MonoBehaviour
         }
     }
 
+    public bool RespawnCheck()
+    {
+        return isRespawning;
+    }
+
     public IEnumerator Respawn()
     {
+        isRespawning = true;
         enemyMove.enabled = !enemyMove.enabled;
         for (int i = 0; i < enemeyRenderer.Length; i++)
         {
@@ -58,6 +65,7 @@ public class EnemyHealthManager : MonoBehaviour
         }
         transform.position = respawnPos;
         enemyMove.enabled = !enemyMove.enabled;
+        isRespawning = !isRespawning;
         yield return null;
     }
 }

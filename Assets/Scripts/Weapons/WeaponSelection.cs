@@ -10,12 +10,10 @@ public class WeaponSelection : MonoBehaviour
     PlayerWeapons playerWeapons;
     [SerializeField]
     List<string> weaponsInInventoryList;
-    [SerializeField]
     string[] weaponsInInventory;
-    [SerializeField]
     string currentWep;
+    int availableAmmoForWep;
 
-    [SerializeField]
     int arrayPos = 0;
 
     void Awake()
@@ -31,6 +29,7 @@ public class WeaponSelection : MonoBehaviour
 
     void Update()
     {
+        availableAmmoForWep = AmmoCostCheck(currentWep, playerWeapons.secondaryAmmo.CheckAmmo());
         OnDeath();
         SelectionMenu();
     }
@@ -62,7 +61,7 @@ public class WeaponSelection : MonoBehaviour
     void SelectionMenu()
     {
         if (Input.GetKeyDown(KeyCode.RightBracket))
-            if (arrayPos >= weaponsInInventory.Length - 1)
+            if (arrayPos >= weaponsInInventoryList.Count - 1)
             {
                 arrayPos = 0;
                 currentWep = weaponsInInventory[arrayPos];
@@ -74,12 +73,12 @@ public class WeaponSelection : MonoBehaviour
             }
 
         if (Input.GetKeyDown(KeyCode.LeftBracket))
-            if (arrayPos <= 0)
+            if (arrayPos <= 0 && weaponsInInventoryList.Count > 0)
             {
-                arrayPos = weaponsInInventory.Length - 1;
+                arrayPos = weaponsInInventoryList.Count - 1;
                 currentWep = weaponsInInventory[arrayPos];
             }
-            else
+            else if (weaponsInInventoryList.Count > 0)
             {
                 arrayPos--;
                 currentWep = weaponsInInventory[arrayPos];
@@ -96,6 +95,23 @@ public class WeaponSelection : MonoBehaviour
     public void SetActivePickup(string pickupTag)
     {
         currentWep = pickupTag;
+    }
+
+    int AmmoCostCheck(string wep, int availableAmmo)
+    {
+        int available = 0;
+        if (wep == "Dagger")
+            available = availableAmmo / 1;
+        if (wep == "HolyCross")
+            available = availableAmmo / 5;
+        if (wep == "StopWatch")
+            available = availableAmmo / 3;
+        return available;
+    }
+
+    public int availableAmmoForCurrentWep()
+    {
+        return availableAmmoForWep;
     }
 
     void OnDeath()
