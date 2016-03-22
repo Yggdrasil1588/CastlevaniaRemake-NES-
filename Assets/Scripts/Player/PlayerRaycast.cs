@@ -8,6 +8,8 @@ public class PlayerRaycast : MonoBehaviour
     public RaycastHit playerRaycastOutHitBackwards;
     public RaycastHit playerRaycastOutHitDown;
 
+    public Ray downRay;
+
     public bool forwardRayIsHitting;
     public bool backwardRayIsHitting;
     public bool downRayIsHitting;
@@ -52,7 +54,7 @@ public class PlayerRaycast : MonoBehaviour
         else
             backwardRayIsHitting = false;
 
-        Ray downRay = new Ray(gameObject.transform.position, -gameObject.transform.up);
+        downRay = new Ray(gameObject.transform.position, -gameObject.transform.up);
         if (Physics.Raycast(downRay, out playerRaycastOutHitDown))
         {
             Debug.DrawRay(gameObject.transform.position, -gameObject.transform.up, Color.red);

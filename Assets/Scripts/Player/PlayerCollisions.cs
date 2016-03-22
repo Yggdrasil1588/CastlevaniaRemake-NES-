@@ -28,7 +28,6 @@ public class PlayerCollisions : MonoBehaviour
             onStairs = true;
             isGrounded = false;
         }
-        playerJump.isJumping = false;
         playerCanMove = true;
     }
 

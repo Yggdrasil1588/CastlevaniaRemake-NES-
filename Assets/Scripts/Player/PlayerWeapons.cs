@@ -13,6 +13,28 @@ public class PlayerWeapons : MonoBehaviour
     [SerializeField]
     int throwForce;
 
+    [Header("MainWepTriger")]
+    [SerializeField]
+    Transform startPos;
+    [SerializeField]
+    Transform endPos;
+    [SerializeField]
+    GameObject mainWep;
+    [SerializeField]
+    float lerpTime;
+    Collider wepCollider
+    {
+        get
+        {
+            return mainWep.GetComponent<Collider>();
+        }
+        set
+        {
+            wepCollider = wepCollider;
+        }
+    }
+    bool canFire = true;
+
     [Header("WeaponSelected")]
     bool dagger;
     bool stopWatch;
@@ -34,10 +56,30 @@ public class PlayerWeapons : MonoBehaviour
 
     void MainWeapon()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1")&&canFire)
         {
-            print("main weapon active");
+            
+            StartCoroutine(WepColliderLoop());
         }
+    }
+
+    IEnumerator WepColliderLoop()
+    {
+        canFire = false;
+        wepCollider.enabled = true;
+        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / lerpTime)
+        {
+            mainWep.transform.position = Vector3.Lerp(startPos.position, endPos.position, t);
+            yield return null;
+        }
+        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / lerpTime)
+        {
+            mainWep.transform.position = Vector3.Lerp(endPos.position, startPos.position, t);
+            yield return null;
+        }
+        wepCollider.enabled = false;
+        canFire = true;
+        print("main wep coroutine finished");
     }
 
     void SecondaryWeapons()
