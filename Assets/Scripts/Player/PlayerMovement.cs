@@ -66,18 +66,6 @@ public class PlayerMovement : MonoBehaviour
 
     } // transforms for lane change
 
-    [System.Serializable]
-    public class MobileInput
-    {
-        [SerializeField]
-        Slider moveSlider;
-
-        public float MoveSliderValue()
-        {
-            return moveSlider.value;
-        }
-    }
-    public MobileInput mobileInput = new MobileInput();
     public MoveSettings moveSettings = new MoveSettings(); // sets class reference
     public Lanes lanes = new Lanes(); // sets class reference
 
