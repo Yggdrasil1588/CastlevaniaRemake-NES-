@@ -22,4 +22,13 @@ public class WeaponDamage : MonoBehaviour
         else
             Destroy(gameObject);
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == enemyLayerMask)
+        {
+            print("Main Hit");
+            other.gameObject.GetComponent<EnemyHealthManager>().ReduceHealth(1);
+        }
+    }
 }

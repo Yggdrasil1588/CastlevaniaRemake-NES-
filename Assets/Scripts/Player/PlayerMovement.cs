@@ -14,9 +14,21 @@ public class PlayerMovement : MonoBehaviour
         float forwardForce = 20;
         [SerializeField]
         float smoothTime = 0.75f;
+        [SerializeField]
+        string MOVE_AXIS = "Horizontal";
+        [SerializeField]
+        string LANE_AXIS = "Vertical";
 
         // references private variables as public methods so that they can be read or written externally
         // depending on what's needed.  
+        public string MoveAxis()
+        {
+            return MOVE_AXIS;
+        }
+        public string LaneAxis()
+        {
+            return LANE_AXIS;
+        }
         public float ZeroSmoothTime()
         {
             return smoothTime;
@@ -85,6 +97,10 @@ public class PlayerMovement : MonoBehaviour
             return facingLeftSet;
         }
     } // read only bool to check if facing left externally
+    public Vector3 velocity;
+
+
+
 
     void Awake()
     {
@@ -111,7 +127,7 @@ public class PlayerMovement : MonoBehaviour
     void ChangeLanes()
     {
         // snaps the player z transform into one of two lanes depending on input
-        if (Input.GetAxis("Vertical") < 0)
+        if (Input.GetAxis(moveSettings.LaneAxis()) < 0)
         {
             if (lanes.Lane1() != null) // checks if transform is available
             {
@@ -122,7 +138,7 @@ public class PlayerMovement : MonoBehaviour
                 Debug.LogError("Lane1 transform not referenced in inspector"); // throws an error if not available
         }
 
-        if (Input.GetAxis("Vertical") > 0)
+        if (Input.GetAxis(moveSettings.LaneAxis()) > 0)
         {
             if (lanes.Lane2() != null)
             {
@@ -137,12 +153,12 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         Player_Movement();
+        playerRb.velocity = (velocity);
     }
 
-    // Method to set booleans.
     void SetFlipState()
     {
-        isMovingHorizontal = Input.GetAxis("Horizontal");
+        isMovingHorizontal = Input.GetAxis(moveSettings.MoveAxis());
 
         // Check to see direction player is facing
         if (isMovingHorizontal <= -.000000001)
@@ -153,11 +169,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Player_Movement()
     {
+        float currentXVelocity = playerRb.velocity.x; // temp float for holding the current x axis velocity of the character
         if (playerCanMove)
         {
-            float currentXVelocity = playerRb.velocity.x; // temp float for holding the current x axis velocity of the character
-
-           
             // deadzone is set up for rigidbody movement so that a zero point can be set when there is no player input
             // this seemed to fix the character not being able to stop while climbing up stairs
             if (Mathf.Abs(isMovingHorizontal) > inputDelay) // if the input variable is greater then the deadzone then player can move
@@ -171,15 +185,10 @@ public class PlayerMovement : MonoBehaviour
                 if (isMovingHorizontal < 0)// if input is - then it's set as +
                     playerRb.AddForce(transform.forward * (-isMovingHorizontal * moveSettings.ForwardForce()));
             }
-            // when no input is detected Mathf.SmoothDamp grabs the last value from currentXVelocity and interpolates between
-            // that value and zero by the smoothTime value set in ZeroSmoothTime()
-            else
-            {
-                float smoothToZero = Mathf.SmoothDamp(currentXVelocity, 0.0f, ref velocityRef, moveSettings.ZeroSmoothTime());
-                playerRb.velocity = new Vector3(smoothToZero, playerRb.velocity.y, playerRb.velocity.z);
-            }
-            Debug.Log(playerRb.velocity);
+       // Debug.Log(playerRb.velocity);
         }
+
+
     }
 
     void SpeedCap()
@@ -213,15 +222,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public float CheckMovement()
-    {
-        return playerRb.velocity.x;
-    }// reference to current player velocity for jumping
-
-    // rotates player based on the facingLeft bool which is determined by the current or last
-    // directional keypress.
     void PlayerFlip()
     {
+        // rotates player based on the facingLeft bool which is determined by the current or last
+        // directional keypress.
         if (playerCanMove)
         {
             if (facingLeftCheck)
