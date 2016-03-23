@@ -43,6 +43,7 @@ public class WeaponSelection : MonoBehaviour
                 weaponsInInventoryList.CopyTo(weaponsInInventory);
             }
 
+
         if (wepTag == "StopWatch")
             if (weaponsInInventoryList.Find(d => d == "StopWatch") == null)
             {

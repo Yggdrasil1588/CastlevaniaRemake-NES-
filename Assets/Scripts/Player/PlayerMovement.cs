@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 //Author: J.Anderson
 
@@ -65,6 +66,18 @@ public class PlayerMovement : MonoBehaviour
 
     } // transforms for lane change
 
+    [System.Serializable]
+    public class MobileInput
+    {
+        [SerializeField]
+        Slider moveSlider;
+
+        public float MoveSliderValue()
+        {
+            return moveSlider.value;
+        }
+    }
+    public MobileInput mobileInput = new MobileInput();
     public MoveSettings moveSettings = new MoveSettings(); // sets class reference
     public Lanes lanes = new Lanes(); // sets class reference
 
@@ -82,6 +95,11 @@ public class PlayerMovement : MonoBehaviour
             return playerCollisions.playerCanMove;
         }
     }
+
+    // Mobile shit (won't be using for castlevania project)
+    [Header ("Mobile")]
+    [SerializeField]
+    float mobMove;
 
     // Componenets
     LaneChange laneChange; // script containing the lane changing method
@@ -152,6 +170,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+
         Player_Movement();
         playerRb.velocity = (velocity);
     }
@@ -161,7 +180,7 @@ public class PlayerMovement : MonoBehaviour
         isMovingHorizontal = Input.GetAxis(moveSettings.MoveAxis());
 
         // Check to see direction player is facing
-        if (isMovingHorizontal <= -.000000001)
+        if (isMovingHorizontal  <= -.000000001)
             facingLeftSet = true;
         else if (isMovingHorizontal >= .000000001)
             facingLeftSet = false;
@@ -187,8 +206,6 @@ public class PlayerMovement : MonoBehaviour
             }
        // Debug.Log(playerRb.velocity);
         }
-
-
     }
 
     void SpeedCap()
