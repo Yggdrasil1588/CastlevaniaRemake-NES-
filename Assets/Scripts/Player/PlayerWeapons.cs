@@ -57,11 +57,12 @@ public class PlayerWeapons : MonoBehaviour
     void MainWeapon()
     {
         if (Input.GetButtonDown("Fire1")&&canFire)
-        {
-            
+        {          
             StartCoroutine(WepColliderLoop());
         }
     }
+
+
 
     IEnumerator WepColliderLoop()
     {

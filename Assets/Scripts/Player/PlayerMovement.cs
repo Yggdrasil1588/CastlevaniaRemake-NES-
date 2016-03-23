@@ -152,6 +152,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+
         Player_Movement();
         playerRb.velocity = (velocity);
     }
@@ -161,7 +162,7 @@ public class PlayerMovement : MonoBehaviour
         isMovingHorizontal = Input.GetAxis(moveSettings.MoveAxis());
 
         // Check to see direction player is facing
-        if (isMovingHorizontal <= -.000000001)
+        if (isMovingHorizontal  <= -.000000001)
             facingLeftSet = true;
         else if (isMovingHorizontal >= .000000001)
             facingLeftSet = false;
@@ -187,8 +188,6 @@ public class PlayerMovement : MonoBehaviour
             }
        // Debug.Log(playerRb.velocity);
         }
-
-
     }
 
     void SpeedCap()

@@ -57,13 +57,6 @@ public class PlayerJump : MonoBehaviour
     PlayerRaycast playerRaycast;
     PlayerCollisions playerCollisions;
 
-    Vector3 velocity;
-
-    public Vector3 Velocity()
-    {
-        return velocity;
-    }
-
     void Start()
     {
         if (GetComponent<PlayerMovement>())
