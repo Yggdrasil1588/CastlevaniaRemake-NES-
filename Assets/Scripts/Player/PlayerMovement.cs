@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 //Author: J.Anderson
 
@@ -83,11 +82,6 @@ public class PlayerMovement : MonoBehaviour
             return playerCollisions.playerCanMove;
         }
     }
-
-    // Mobile shit (won't be using for castlevania project)
-    [Header ("Mobile")]
-    [SerializeField]
-    float mobMove;
 
     // Componenets
     LaneChange laneChange; // script containing the lane changing method
