@@ -82,6 +82,7 @@ public class PlayerMovement : MonoBehaviour
             return playerCollisions.playerCanMove;
         }
     }
+    
 
     // Componenets
     LaneChange laneChange; // script containing the lane changing method
