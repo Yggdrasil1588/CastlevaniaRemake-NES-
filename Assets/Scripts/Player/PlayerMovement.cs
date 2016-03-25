@@ -83,6 +83,26 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //Field
+    private int myHealth;
+
+    //Property
+    public int MyProperty
+    {
+        get { return myHealth; }
+        set {
+            if (value < 0)
+            {
+                myHealth = 0;
+            }
+            else
+            {
+                myHealth = value;
+            }
+        }
+    }
+    
+
     // Componenets
     LaneChange laneChange; // script containing the lane changing method
     Rigidbody playerRb;
