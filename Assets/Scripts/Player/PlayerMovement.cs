@@ -82,25 +82,6 @@ public class PlayerMovement : MonoBehaviour
             return playerCollisions.playerCanMove;
         }
     }
-
-    //Field
-    private int myHealth;
-
-    //Property
-    public int MyProperty
-    {
-        get { return myHealth; }
-        set {
-            if (value < 0)
-            {
-                myHealth = 0;
-            }
-            else
-            {
-                myHealth = value;
-            }
-        }
-    }
     
 
     // Componenets
