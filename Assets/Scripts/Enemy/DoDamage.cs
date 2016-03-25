@@ -5,6 +5,10 @@ using System.Collections;
 
 //Author: J.Anderson
 
+/// <summary>
+/// Script for enemies to damage player on contact
+/// </summary>
+
 public class DoDamage : MonoBehaviour
 {
     PlayerHealthManager playerHealthManager;
@@ -17,6 +21,7 @@ public class DoDamage : MonoBehaviour
 
     public void OnCollisionEnter(Collision enemyCollide)
     {
+        
         if (enemyCollide.gameObject.tag == "Player")
         {
             playerHealthManager.ReduceHealth(1);

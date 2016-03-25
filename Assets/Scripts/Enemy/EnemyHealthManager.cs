@@ -23,8 +23,9 @@ public class EnemyHealthManager : MonoBehaviour
         scoreManager = FindObjectOfType<ScoreManager>();
         enemyMove = gameObject.GetComponent<EnemyMove>();
         enemyHealth = enemyMaxHealth;
-        enemyCollider = gameObject.GetComponent<Collider>();
-        enemeyRenderer = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+        enemyCollider = gameObject.GetComponent<Collider>(); // for switching off on death
+        enemeyRenderer = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(); // change to normal get component if there aren't 
+                                                                                    // multiple components with mesh renderers
     }
 
     public void ReduceHealth(int amount)
@@ -50,6 +51,11 @@ public class EnemyHealthManager : MonoBehaviour
 
     public IEnumerator Respawn()
     {
+        // written to pick out all mesh renderers in an array and disable/enable them
+        // would need to be modified depending on how the enemy had been modeled
+        
+        // disables collider and sends the enemy back to it's start pos which is set as wherever it's 
+        // placed at game start.
         isRespawning = true;
         enemyMove.enabled = !enemyMove.enabled;
         for (int i = 0; i < enemeyRenderer.Length; i++)
