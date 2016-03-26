@@ -8,6 +8,7 @@ using System.Collections;
 public class WeaponSelection : MonoBehaviour
 {
     PlayerWeapons playerWeapons;
+    PlayerHealthManager pHM;
     [SerializeField]
     List<string> weaponsInInventoryList;
     string[] weaponsInInventory;
@@ -18,6 +19,7 @@ public class WeaponSelection : MonoBehaviour
 
     void Awake()
     {
+        pHM = FindObjectOfType<PlayerHealthManager>();
         playerWeapons = FindObjectOfType<PlayerWeapons>();
     }
 
@@ -117,10 +119,12 @@ public class WeaponSelection : MonoBehaviour
 
     void OnDeath()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        if (pHM.CheckHealth() <= 0)
         {
             weaponsInInventoryList.Clear();
             weaponsInInventory = new string[3];
+            playerWeapons.CheckSelectedWeapon(null);
+            currentWep = "";
         }
     }
 }

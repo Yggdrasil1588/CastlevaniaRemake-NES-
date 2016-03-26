@@ -24,7 +24,7 @@ public class DoDamage : MonoBehaviour
         
         if (enemyCollide.gameObject.tag == "Player")
         {
-            playerHealthManager.ReduceHealth(1);
+            playerHealthManager.RemoveHealth(1);
             StartCoroutine(gameObject.GetComponent<EnemyHealthManager>().Respawn());
         }
     }

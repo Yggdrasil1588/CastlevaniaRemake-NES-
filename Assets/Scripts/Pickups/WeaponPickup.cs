@@ -25,12 +25,12 @@ public class WeaponPickup : MonoBehaviour
         if (other.tag == "Player" && gameObject.tag == "Whip")
         {
             // if true then switch to phase 2 increasing whip cast length
-            if (playerWeapons.weaponVariables.Phase1Check())
+            if (playerWeapons.weaponVariables.getPhase1)
             {
                 playerWeapons.weaponVariables.WeponPhaseSwap(true);
             }
             // if true then phase 2 stays active and 3 is also activated increasing the damage form 1 to 3
-            else if (playerWeapons.weaponVariables.Phase2Check())
+            else if (playerWeapons.weaponVariables.getPhase2)
             {
                 playerWeapons.weaponVariables.Phase3(true);
             }

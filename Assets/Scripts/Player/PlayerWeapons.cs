@@ -9,6 +9,7 @@ public class PlayerWeapons : MonoBehaviour
     [System.Serializable]
     public class WeaponVariables
     {
+        #region Fields
         [SerializeField]
         float lerpTime;
         [SerializeField]
@@ -23,23 +24,60 @@ public class PlayerWeapons : MonoBehaviour
         bool wepPhase2;
         [SerializeField]
         bool wepPhase3;
+        #endregion
+        #region Properties
+        public float getThrowForce
+        {
+            get
+            {
+                return throwForce;
+            }
+        }
+        public float getPhase1Length
+        {
+            get
+            {
+                return phase1Length;
+            }
+        }
+        public float getPhase2Length
+        {
+            get
+            {
+                return phase2Length;
 
-        public float ThrowForce()
-        {
-            return throwForce;
+            }
         }
-        public float Phase1Length()
+        public float getLerpTime
         {
-            return phase1Length;
+            get
+            {
+                return lerpTime;
+            }
         }
-        public float Phase2Length()
+        public bool getPhase1
         {
-            return phase2Length;
+            get
+            {
+                return wepPhase1;
+            }
         }
-        public float LerpTime()
+        public bool getPhase2
         {
-            return lerpTime;
+            get
+            {
+                return wepPhase2;
+            }
         }
+        public bool getPhase3
+        {
+            get
+            {
+                return wepPhase3;
+            }
+        }
+        #endregion
+        #region Methods
         public void WeponPhaseSwap(bool phase)
         {
             if (phase)
@@ -48,25 +86,16 @@ public class PlayerWeapons : MonoBehaviour
                 wepPhase1 = !wepPhase1;
             }
         }
-        public bool Phase1Check()
-        {
-            return wepPhase1;
-        }
-        public bool Phase2Check()
-        {
-            return wepPhase2;
-        }
-        public bool Phase3()
-        {
-            return wepPhase3;
-        }
         public void Phase3(bool setValue)
         {
             wepPhase3 = setValue;
         }
+        #endregion
     }
+
     public WeaponVariables weaponVariables = new WeaponVariables();
     public AmmoManager secondaryAmmo = new AmmoManager();
+
     ScoreManager scoreManager;
     PlayerMovement playerMovement;
 
@@ -90,8 +119,8 @@ public class PlayerWeapons : MonoBehaviour
             wepCollider = wepCollider;
         }
     }
+
     bool canFire = true;
-    Vector3 whipTransTemp;
     bool facingLeft
     {
         get
@@ -100,12 +129,13 @@ public class PlayerWeapons : MonoBehaviour
         }
     }
 
-    [Header("WeaponSelected")]
+    // Weapon selected
     bool dagger;
     bool stopWatch;
     bool holyCross;
 
     Vector3 playerVelocity;
+    Vector3 whipTransTemp;
 
     void Awake()
     {
@@ -125,7 +155,7 @@ public class PlayerWeapons : MonoBehaviour
     {
         //Grabs the current velocity of the player to add to weapon throw force
         if (facingLeft)
-            playerVelocity = gameObject.GetComponent<Rigidbody>().velocity; 
+            playerVelocity = gameObject.GetComponent<Rigidbody>().velocity;
         else if (!facingLeft)
             playerVelocity = -gameObject.GetComponent<Rigidbody>().velocity;
     }
@@ -140,45 +170,50 @@ public class PlayerWeapons : MonoBehaviour
 
     void WhipLength()
     {
+
         whipTransTemp = startPos.transform.position;
         Vector3 whipLength = new Vector3(whipTransTemp.x, whipTransTemp.y, whipTransTemp.z);
-
-        if (weaponVariables.Phase1Check())
+        // sets distance the collider can travel based on what lvl the whip upgrade is
+        if (weaponVariables.getPhase1)
         {
+            // moves based on direction
             if (facingLeft)
-                whipLength.x = whipLength.x + weaponVariables.Phase1Length();
+                whipLength.x = whipLength.x + weaponVariables.getPhase1Length;
             else if (!facingLeft)
-                whipLength.x = whipLength.x - weaponVariables.Phase1Length();
+                whipLength.x = whipLength.x - weaponVariables.getPhase1Length;
 
             endPos.transform.position = whipLength;
         }
 
-        if (weaponVariables.Phase2Check())
+        if (weaponVariables.getPhase2)
         {
             if (facingLeft)
-                whipLength.x = whipLength.x + weaponVariables.Phase2Length();
+                whipLength.x = whipLength.x + weaponVariables.getPhase2Length;
             else if (!facingLeft)
-                whipLength.x = whipLength.x - weaponVariables.Phase2Length();
+                whipLength.x = whipLength.x - weaponVariables.getPhase2Length;
 
             endPos.transform.position = whipLength;
         }
 
-        if (weaponVariables.Phase3())
+        // on phase 3 increases weapon damage
+        if (weaponVariables.getPhase3)
         {
             mainWep.GetComponent<WeaponDamage>().damage = 3;
         }
     }
 
+
     IEnumerator WepColliderLoop()
     {
+        // lerps the collider to its phase distance and back again
         canFire = false;
         wepCollider.enabled = true;
-        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / weaponVariables.LerpTime())
+        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / weaponVariables.getLerpTime)
         {
             mainWep.transform.position = Vector3.Lerp(startPos.transform.position, endPos.transform.position, t);
             yield return null;
         }
-        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / weaponVariables.LerpTime())
+        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / weaponVariables.getLerpTime)
         {
             mainWep.transform.position = Vector3.Lerp(endPos.transform.position, startPos.transform.position, t);
             yield return null;
@@ -195,6 +230,7 @@ public class PlayerWeapons : MonoBehaviour
         SecondaryWeaponStopWatch();
     }
 
+    // sets weapon bool based on current weapon selected in submenu
     public void CheckSelectedWeapon(string currentWep)
     {
         dagger = currentWep == "Dagger" ? true : false;
@@ -202,11 +238,11 @@ public class PlayerWeapons : MonoBehaviour
         holyCross = currentWep == "HolyCross" ? true : false;
     }
 
+    // instantiates the dagger prefab at spawn point
     void SecondaryWeaponDagger()
     {
         if (dagger)
         {
-
             if (Input.GetButtonDown("Fire2") && secondaryAmmo.CheckAmmo() > 0)
             {
                 GameObject temp = Instantiate(Resources.Load("Dagger", typeof(GameObject)),
@@ -215,7 +251,7 @@ public class PlayerWeapons : MonoBehaviour
                 Rigidbody rb = temp.AddComponent<Rigidbody>();
                 Physics.IgnoreCollision(temp.GetComponent<Collider>(), gameObject.GetComponent<Collider>());
                 rb.useGravity = false;
-                Vector3 velocity = new Vector3(playerVelocity.x + weaponVariables.ThrowForce(), rb.velocity.y, rb.velocity.z);
+                Vector3 velocity = new Vector3(playerVelocity.x + weaponVariables.getThrowForce, rb.velocity.y, rb.velocity.z);
                 if (facingLeft)
                     rb.velocity = velocity;
                 else if (!facingLeft)
@@ -224,6 +260,8 @@ public class PlayerWeapons : MonoBehaviour
             }
         }
     }
+
+    // starts coroutine to freeze enemies
     void SecondaryWeaponStopWatch()
     {
         if (stopWatch)
@@ -236,6 +274,8 @@ public class PlayerWeapons : MonoBehaviour
             }
         }
     }
+
+    // finds all spawned enemies and kills them, needs to be changed to enemies on screen
     void SecondaryWeaponHolyCross()
     {
         if (holyCross)
@@ -259,6 +299,7 @@ public class PlayerWeapons : MonoBehaviour
         }
     }
 
+    // coroutine finds all enemies and freezes their movement for set time
     IEnumerator StopWatchCorout()
     {
         EnemyMove[] enemies = FindObjectsOfType<EnemyMove>();
