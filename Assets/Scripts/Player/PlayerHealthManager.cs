@@ -7,10 +7,12 @@ using UnityEngine.UI;
 public class PlayerHealthManager : MonoBehaviour
 {
     TimerManager timeManager;
-    public Canvas deadDebug;
+    public Canvas deadDebug; // on death UI (not linked up through scenes yet)
     Vector3 startPos;
     [SerializeField]
-    int playerMaxHealth = 10;
+    int maxHealth = 10;
+    [SerializeField]
+    int maxLife = 5;
     int playerHealth;
     int playerLife = 3;
     public Text healthDisplayDebug;
@@ -19,12 +21,19 @@ public class PlayerHealthManager : MonoBehaviour
     {
         startPos = gameObject.transform.position;
         timeManager = FindObjectOfType<TimerManager>();
-        playerHealth = playerMaxHealth;
+        playerHealth = maxHealth;
     }
 
+    // All access to private fields in script 
+    #region Properties
+    // set so that health will never exceed max health
     public void AddHealth(int amount)
     {
         playerHealth = playerHealth + amount;
+        if (playerHealth >= maxHealth)
+        {
+            playerHealth = maxHealth;
+        }
     }
 
     public void RemoveHealth(int amount)
@@ -37,33 +46,38 @@ public class PlayerHealthManager : MonoBehaviour
         return playerHealth;
     }
 
+    // set so that life will never exceed max life
+    public void AddLife(int amount)
+    {
+        playerLife = playerLife + amount;
+        if (playerLife >= maxLife)
+        {
+            playerLife = maxLife;
+        }
+    }
+
     public int CheckLife()
     {
         return playerLife;
     }
+    #endregion
 
     void Update()
     {
         OnDeath();
-        if (playerHealth > playerMaxHealth)
-            playerHealth = playerMaxHealth;
 
         healthDisplayDebug.text = "Health: " + playerHealth.ToString();
     }
 
-    public void ReduceHealth(int amount)
-    {
-        playerHealth = playerHealth - amount;
-    }
 
     void OnDeath()
     {
         if (playerHealth <= 0 && playerLife >= 1)
         {
             playerLife = playerLife - 1;
-            gameObject.transform.position = startPos;
+            gameObject.transform.position = startPos; // will be replaced with a checkpoint 
             timeManager.timerClass.ResetTimer();
-            playerHealth = playerMaxHealth;
+            playerHealth = maxHealth;
         }
         if (playerHealth <= 0 && playerLife <= 0)
         {

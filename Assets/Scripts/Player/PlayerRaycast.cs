@@ -2,6 +2,12 @@
 
 //Author: J.Anderson
 
+    /// <summary>
+    /// really old script i made at the start of the course that's traveled through projects
+    /// is still used for some things but will be better to get rid of this script altogether,
+    /// is responsible from throwing those shithouse null reference errors in some situations
+    /// </summary>
+
 public class PlayerRaycast : MonoBehaviour
 {
     public RaycastHit playerRaycastOutHitForwards;

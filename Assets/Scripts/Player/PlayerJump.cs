@@ -14,42 +14,54 @@ public class PlayerJump : MonoBehaviour
         [SerializeField]
         float distToGrounded = 0.8f;
         [SerializeField]
-        string JUMP_AXIS = "Jump";
+        string jumpAxis = "Jump";
         [SerializeField]
-        LayerMask ground;       
+        LayerMask ground;
 
-        public string JumpAxis()
+        public string getJumpAxis
         {
-            return JUMP_AXIS;
+            get
+            {
+                return jumpAxis;
+            }
         }
-
-        public float JumpVelocity()
+        public float getJumpVelocity
         {
-            return jumpVelocity;
+            get
+            {
+                return jumpVelocity;
+            }
         }
-
-        public LayerMask GroundLayerMask()
+        public int getGroundLayerMask
         {
-            return ground;
-        }
-
-        public float DistToGrounded()
+            get
+            {
+                return (1 << ground);
+            }
+        } // returns ground mask as a bitwise operation (use ~ infront of property when setting in  
+                                         // script to reverse to everything but chosen layer/s)
+        public float getDistToGrounded
         {
-            return distToGrounded;
+            get
+            {
+                return distToGrounded;
+            }
         }
     }
-
     [System.Serializable]
     public class PhysicsSettings
     {
         [SerializeField]
         float downAcceleration = 0.75f;
-
-        public float DownAcceleration()
+        public float getDownAcceleration
         {
-            return downAcceleration;
+            get
+            {
+                return downAcceleration;
+            }
         }
     }
+
     public JumpSettings jumpSettings = new JumpSettings();
     public PhysicsSettings physicsSettings = new PhysicsSettings();
 
@@ -57,8 +69,11 @@ public class PlayerJump : MonoBehaviour
     PlayerRaycast playerRaycast;
     PlayerCollisions playerCollisions;
 
+
     void Start()
     {
+        // all of these check for the components and throw up specific errors if not attached rather than 
+        // unity default null errors.
         if (GetComponent<PlayerMovement>())
             playerMovement = GetComponent<PlayerMovement>();
         else
@@ -78,12 +93,24 @@ public class PlayerJump : MonoBehaviour
         Jump();
     }
 
+    bool Grounded()
+    {
+        // raycast to check if grounded based on distance to ground property
+        return Physics.Raycast(playerRaycast.downRay, jumpSettings.getDistToGrounded, ~jumpSettings.getGroundLayerMask);
+    }
+
+    bool JumpInput()
+    {
+        return Input.GetButtonDown(jumpSettings.getJumpAxis);
+    }
+
     void Jump()
     {
-        if (JumpInput() && Grounded()&&playerCollisions.playerCanJump)
+        // jump set through rigidbody
+        if (JumpInput() && Grounded() && playerCollisions.playerCanJump)
         {
             playerCollisions.playerCanJump = false;
-            playerMovement.velocity.y = jumpSettings.JumpVelocity();
+            playerMovement.velocity.y = jumpSettings.getJumpVelocity;
         }
         else if (!JumpInput() && Grounded())
         {
@@ -91,20 +118,7 @@ public class PlayerJump : MonoBehaviour
         }
         else
         {
-            playerMovement.velocity.y -= physicsSettings.DownAcceleration();
+            playerMovement.velocity.y -= physicsSettings.getDownAcceleration;
         }
     }
-
-    bool JumpInput()
-    {
-        return Input.GetButtonDown(jumpSettings.JumpAxis());
-    }
-
-    bool Grounded()
-    {
-        return Physics.Raycast(playerRaycast.downRay, jumpSettings.DistToGrounded(),jumpSettings.GroundLayerMask());
-    }
-
-
-
 }

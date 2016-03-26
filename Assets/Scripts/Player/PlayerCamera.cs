@@ -3,9 +3,7 @@
 //Author: J.Anderson
 
 /// <summary>
-/// To setup drop the script onto the camera then add an empty game 
-/// object to the character heirachy and set it ahead of the character
-/// by about 6 units then drop the empty object in the cameraTarget box.
+/// needs to be tweaked for current project
 /// <summary>
 
 public class PlayerCamera : MonoBehaviour
