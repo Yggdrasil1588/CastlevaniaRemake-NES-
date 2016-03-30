@@ -161,7 +161,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Player_Movement()
     {
-        print(playerRb.velocity);
+        //print(playerRb.velocity);
         playerRb.velocity = (velocity); // the movement is base off adding force to zero velocity, this allows the jump to be added
                                         // to the velocity and caps the speed based on the force; 
         if (playerCanMove)

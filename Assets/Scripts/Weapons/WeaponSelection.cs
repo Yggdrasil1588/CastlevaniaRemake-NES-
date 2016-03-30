@@ -124,6 +124,7 @@ public class WeaponSelection : MonoBehaviour
             weaponsInInventoryList.Clear();
             weaponsInInventory = new string[3];
             playerWeapons.CheckSelectedWeapon(null);
+            playerWeapons.weaponVariables.PhaseReset();
             currentWep = "";
         }
     }

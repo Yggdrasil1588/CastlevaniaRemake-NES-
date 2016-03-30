@@ -43,5 +43,9 @@ public class WeaponPickup : MonoBehaviour
             weaponSelection.SetActivePickup(gameObject.tag);
             Destroy(gameObject);
         }
+        if (other.tag == "Ground")
+        {
+            GetComponent<Rigidbody>().isKinematic = true;
+        }
     }
 }

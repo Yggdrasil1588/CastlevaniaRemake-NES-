@@ -76,6 +76,12 @@ public class PlayerWeapons : MonoBehaviour
                 return wepPhase3;
             }
         }
+
+        public void PhaseReset()
+        {
+            wepPhase1 = true;
+            wepPhase2 = wepPhase3 = false;
+        }
         #endregion
         #region Methods
         public void WeponPhaseSwap(bool phase)
@@ -149,6 +155,8 @@ public class PlayerWeapons : MonoBehaviour
         SecondaryWeapons();
         WhipLength();
         VelocityCheck();
+        if (Input.GetKeyDown(KeyCode.R))
+            weaponVariables.PhaseReset();
     }
 
     void VelocityCheck()

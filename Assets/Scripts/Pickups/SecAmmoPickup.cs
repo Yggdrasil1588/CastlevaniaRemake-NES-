@@ -8,6 +8,27 @@ using System.Collections;
 public class SecAmmoPickup : MonoBehaviour
 {
     AmmoManager secondaryWeapon;
+ [SerializeField]
+    private int ammo;
+   
+    public int AmmoToAdd
+    {
+        get { return ammo; }
+        set
+        {
+            if (ammo > 5)
+            {
+                ammo = 5;
+            }
+            else if (ammo < 0)
+            {
+                ammo = 0;
+            }
+            else
+                ammo = value; 
+        }
+    }
+
 
     void Awake()
     {
@@ -18,8 +39,13 @@ public class SecAmmoPickup : MonoBehaviour
     {
         if (ammoPickup.gameObject.tag == "Player")
         {
-            secondaryWeapon.AddAmmo(1);
+            secondaryWeapon.AddAmmo(ammo);
             Destroy(gameObject);
+        }
+        if (ammoPickup.gameObject.tag == "Ground")
+        {
+            Rigidbody rb = gameObject.GetComponent<Rigidbody>();
+            rb.isKinematic = true;
         }
     }
 }
